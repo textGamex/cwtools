@@ -4,7 +4,6 @@ open CWTools.Process
 open CWTools.Common
 open FParsec
 open CWTools.Utilities.Utils
-open CWTools.Process.STLProcess
 open CWTools.Utilities
 
 module UtilityParser =
@@ -72,7 +71,7 @@ module UtilityParser =
             []
         | Success(s, _, _) ->
             let root =
-                CWTools.Process.STLProcess.simpleProcess.ProcessNode () "root" (mkZeroFile filename) s
+                CWTools.Process.ProcessCore.simpleProcess.ProcessNode () "root" (mkZeroFile filename) s
 
             root.Child "links"
             |> Option.map (fun l -> l.Children |> List.map (parseLink anyScope parseScope allScopes))
@@ -115,7 +114,7 @@ module UtilityParser =
             log (sprintf "scopedefinitions file %s failed with %s" filename e)
             ([], [])
         | Success(s, _, _) ->
-            let root = simpleProcess.ProcessNode () "root" (mkZeroFile filename) s
+            let root = CWTools.Process.ProcessCore.simpleProcess.ProcessNode () "root" (mkZeroFile filename) s
 
             let scopes =
                 root.Child "scopes"
@@ -167,7 +166,7 @@ module UtilityParser =
             log (sprintf "modifiercategorydefinitions file %s failed with %s" filename e)
             []
         | Success(s, _, _) ->
-            let root = simpleProcess.ProcessNode () "root" (mkZeroFile filename) s
+            let root = CWTools.Process.ProcessCore.simpleProcess.ProcessNode () "root" (mkZeroFile filename) s
 
             root.Child "modifier_categories"
             |> Option.map (fun c -> c.Children |> List.map parseModCatDef)
@@ -233,7 +232,7 @@ module UtilityParser =
             log (sprintf "loccommands file %s failed with %s" filename e)
             ([], [], [])
         | Success(s, _, _) ->
-            let root = simpleProcess.ProcessNode () "root" (mkZeroFile filename) s
+            let root = CWTools.Process.ProcessCore.simpleProcess.ProcessNode () "root" (mkZeroFile filename) s
 
             let a, b =
                 root.Child "localisation_commands"
@@ -255,7 +254,7 @@ module UtilityParser =
             log (sprintf "modifier file %s failed with %s" filename e)
             []
         | Success(s, _, _) ->
-            let root = simpleProcess.ProcessNode () "root" (mkZeroFile filename) s
+            let root = CWTools.Process.ProcessCore.simpleProcess.ProcessNode () "root" (mkZeroFile filename) s
 
             root.Child "modifiers"
             |> Option.map (fun ms ->
@@ -303,7 +302,7 @@ module UtilityParser =
             log (sprintf "settings file %s failed with %s" filename e)
             None
         | Success(s, _, _) ->
-            let root = simpleProcess.ProcessNode () "root" (mkZeroFile filename) s
+            let root = CWTools.Process.ProcessCore.simpleProcess.ProcessNode () "root" (mkZeroFile filename) s
 
             let listMergeOptimisations =
                 root.Child "list_merge_optimisations"

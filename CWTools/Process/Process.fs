@@ -1,12 +1,11 @@
 namespace CWTools.Process
 
 open System
-open CWTools.Common.STLConstants
+open CWTools.Common
 open CWTools.Parser.Types
 open CWTools.Utilities.Position
 open CWTools.Utilities.Utils
 open CWTools.Utilities
-open CWTools.Common.NewScope
 
 
 module List =

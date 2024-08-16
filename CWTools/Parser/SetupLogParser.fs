@@ -1,13 +1,12 @@
 namespace CWTools.Parser
 
-
 open FParsec
 open CWTools.Common
-open CWTools.Common.STLConstants
-
-
 
 module SetupLogParser =
+
+    type RawStaticModifier = { num: int; tag: string; name: string }
+    type RawModifier = { tag: string; category: int }
 
     let private isvaluechar = SharedParsers.isvaluechar
 
