@@ -1,21 +1,23 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 15
-VisualStudioVersion = 15.0.26124.0
+# Visual Studio Version 17
+VisualStudioVersion = 17.11.35208.52
 MinimumVisualStudioVersion = 15.0.26124.0
-Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "CWTools", "CWTools\CWTools.fsproj", "{3F1CDDAF-D51F-49F0-9B59-A979C9AB1DB9}"
+Project("{6EC3EE1D-3C4E-46DD-8F32-0CC8E7565705}") = "CWTools", "CWTools\CWTools.fsproj", "{3F1CDDAF-D51F-49F0-9B59-A979C9AB1DB9}"
 EndProject
-Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "CWToolsTests", "CWToolsTests\CWToolsTests.fsproj", "{4D57C624-273D-4D38-8F1D-CE9AE1F2AA62}"
+Project("{6EC3EE1D-3C4E-46DD-8F32-0CC8E7565705}") = "CWToolsTests", "CWToolsTests\CWToolsTests.fsproj", "{4D57C624-273D-4D38-8F1D-CE9AE1F2AA62}"
 EndProject
-Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "CWToolsCLI", "CWToolsCLI\CWToolsCLI.fsproj", "{009331D5-9B95-4A35-8299-F4794796D984}"
+Project("{6EC3EE1D-3C4E-46DD-8F32-0CC8E7565705}") = "CWToolsCLI", "CWToolsCLI\CWToolsCLI.fsproj", "{009331D5-9B95-4A35-8299-F4794796D984}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CWToolsCSTests", "CWToolsCSTests\CWToolsCSTests.csproj", "{C286B479-2DD9-4F91-BDE3-6AC02B315BA9}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CWToolsCSTests", "CWToolsCSTests\CWToolsCSTests.csproj", "{C286B479-2DD9-4F91-BDE3-6AC02B315BA9}"
 EndProject
-Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "CWToolsDocs", "CWToolsDocs\CWToolsDocs.fsproj", "{AA4D4200-D88E-4D55-B4DB-A4E4B557A0B2}"
+Project("{6EC3EE1D-3C4E-46DD-8F32-0CC8E7565705}") = "CWToolsDocs", "CWToolsDocs\CWToolsDocs.fsproj", "{AA4D4200-D88E-4D55-B4DB-A4E4B557A0B2}"
 EndProject
-Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "CWToolsScripts", "CWToolsScripts\CWToolsScripts.fsproj", "{EA21F6FF-7ADD-4FBC-8F9B-8DF24F76F4C0}"
+Project("{6EC3EE1D-3C4E-46DD-8F32-0CC8E7565705}") = "CWToolsScripts", "CWToolsScripts\CWToolsScripts.fsproj", "{EA21F6FF-7ADD-4FBC-8F9B-8DF24F76F4C0}"
 EndProject
-Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "build", "build\build.fsproj", "{C70093B5-7874-4B09-A5F9-41C47DE603B5}"
+Project("{6EC3EE1D-3C4E-46DD-8F32-0CC8E7565705}") = "build", "build\build.fsproj", "{C70093B5-7874-4B09-A5F9-41C47DE603B5}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ConsoleApp1", "ConsoleApp1\ConsoleApp1.csproj", "{ECAF83ED-8D16-4447-B5C0-A9D7C2B26B57}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -25,9 +27,6 @@ Global
 		Release|Any CPU = Release|Any CPU
 		Release|x64 = Release|x64
 		Release|x86 = Release|x86
-	EndGlobalSection
-	GlobalSection(SolutionProperties) = preSolution
-		HideSolutionNode = FALSE
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
 		{3F1CDDAF-D51F-49F0-9B59-A979C9AB1DB9}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
@@ -114,5 +113,20 @@ Global
 		{C70093B5-7874-4B09-A5F9-41C47DE603B5}.Release|x64.Build.0 = Release|Any CPU
 		{C70093B5-7874-4B09-A5F9-41C47DE603B5}.Release|x86.ActiveCfg = Release|Any CPU
 		{C70093B5-7874-4B09-A5F9-41C47DE603B5}.Release|x86.Build.0 = Release|Any CPU
+		{ECAF83ED-8D16-4447-B5C0-A9D7C2B26B57}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{ECAF83ED-8D16-4447-B5C0-A9D7C2B26B57}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{ECAF83ED-8D16-4447-B5C0-A9D7C2B26B57}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{ECAF83ED-8D16-4447-B5C0-A9D7C2B26B57}.Debug|x64.Build.0 = Debug|Any CPU
+		{ECAF83ED-8D16-4447-B5C0-A9D7C2B26B57}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{ECAF83ED-8D16-4447-B5C0-A9D7C2B26B57}.Debug|x86.Build.0 = Debug|Any CPU
+		{ECAF83ED-8D16-4447-B5C0-A9D7C2B26B57}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{ECAF83ED-8D16-4447-B5C0-A9D7C2B26B57}.Release|Any CPU.Build.0 = Release|Any CPU
+		{ECAF83ED-8D16-4447-B5C0-A9D7C2B26B57}.Release|x64.ActiveCfg = Release|Any CPU
+		{ECAF83ED-8D16-4447-B5C0-A9D7C2B26B57}.Release|x64.Build.0 = Release|Any CPU
+		{ECAF83ED-8D16-4447-B5C0-A9D7C2B26B57}.Release|x86.ActiveCfg = Release|Any CPU
+		{ECAF83ED-8D16-4447-B5C0-A9D7C2B26B57}.Release|x86.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
 	EndGlobalSection
 EndGlobal
