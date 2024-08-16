@@ -351,12 +351,10 @@ module internal SharedParsers =
     //| _ -> choice [(attempt valueB); valueS] stream
     //choiceL [(attempt valueB); (attempt hsv); (attempt rgb); valueS] "value" stream
 
+    valueimpl.Value <- valueCustom <?> "value"
 
-
-    valueimpl := valueCustom <?> "value"
-
-    keyvalueimpl
-    := pipe5 getPosition (keyQ <|> key) operator value (getPosition .>> ws) (fun start id op value endp ->
+    keyvalueimpl.Value
+        <- pipe5 getPosition (keyQ <|> key) operator value (getPosition .>> ws) (fun start id op value endp ->
         KeyValue(PosKeyValue(getRange start endp, KeyValueItem(id, value, op))))
 
     let alle = ws >>. many statement .>> eof |>> (fun f -> (ParsedFile f))
