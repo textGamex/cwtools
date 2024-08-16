@@ -9,13 +9,6 @@ open CWTools.Utilities.Utils
 module YAMLLocalisationParser =
     open FParsec
 
-    // type Entry = {
-    //     key : string
-    //     value : char option
-    //     desc : string
-    //     position : Position
-    // }
-
     type LocFile = { key: string; entries: Entry list }
 
     let inline isLocValueChar (c: char) =
@@ -30,13 +23,7 @@ module YAMLLocalisationParser =
         || (c >= '\u3000' && c <= '\u30FF')
         || (c >= '\uFF00' && c <= '\uFFEF')
 
-    //let key = charsTillString ":" true 1000 .>> spaces <?> "key"
     let key = many1Satisfy ((=) ':' >> not) .>> pchar ':' .>> spaces <?> "key"
-    //let descInner = (charsTillString "§")
-    //let stringThenEscaped = pipe2 (manyCharsTill (noneOf ['"']) (pchar '§')) (manyCharsTill anyChar (pstring "§!")) (+) <?> "escaped"
-    //let desc = pipe2 (pchar '"') (many ((attempt stringThenEscaped) <|> manyCharsTill anyChar (pchar '"')) |>> List.reduce (+)) (fun a b -> string a + b)
-    //let desc = between (pchar '"') (pchar '"') (charsTillString "\"" false 10000) .>> spaces <?> "desc"
-    //let desc = pipe3 (pchar '"' |>> string) (many (attempt stringThenEscaped) |>> List.fold (+) "")  (manyCharsTill (noneOf ['§']) (pchar '"')) (fun a b c -> string a + b + c) <?> "string"
     let desc =
         many1Satisfy isLocValueChar .>>. getPosition .>>. restOfLine false <?> "desc"
 
@@ -81,27 +68,6 @@ module YAMLLocalisationParser =
     let parseLocText text name = runParserOnString file () name text
 
     type YAMLLocalisationService<'L>(files: (string * string) list, keyToLanguage, gameLang) =
-        // let localisationFolder : string = localisationSettings.folder
-        // let language : CK2Lang =
-        //     match localisationSettings.language with
-        //         | CK2 l -> l
-        //         | _ -> failwith "Wrong language for localisation"
-
-        // let languageKey =
-        //     match language with
-        //     |CK2Lang.English -> "l_english"
-        //     |CK2Lang.French -> "l_french"
-        //     |CK2Lang.Spanish -> "l_spanish"
-        //     |CK2Lang.German -> "l_german"
-        //     |_ -> failwith "Unknown language enum value"
-
-        // let keyToLanguage =
-        //     function
-        //     |"l_english" -> Some EU4Lang.English
-        //     |"l_french" -> Some EU4Lang.French
-        //     |"l_spanish" -> Some EU4Lang.Spanish
-        //     |"l_german" -> Some EU4Lang.German
-        //     |_ -> None
         let mutable results: Results =
             upcast new Dictionary<string, bool * int * string * Position option>()
 
@@ -120,16 +86,6 @@ module YAMLLocalisationParser =
                 | None -> (true, entries.Length, "", None)
             | Failure(msg, p, _) -> (false, 0, msg, Some p.Position)
 
-        // let addFile f =
-        //     match parseLocFile f with
-        //     | Success({key = key; entries = entries}, _, _) ->
-        //         match keyToLanguage key with
-        //         |Some l ->
-        //             let es = entries |> List.map (fun e -> e, CK2 l)
-        //             records <- es@records; (true, es.Length, "")
-        //         |None -> (true, entries.Length, "")
-        //     | Failure(msg, _, _) -> (false, 0, msg)
-        // let addFiles (x : string list) = List.map (fun f -> (f, addFile f)) x
         let addFiles (x: (string * string) list) =
             List.map (fun (f, t) -> (f, addFile f t)) x
 
@@ -159,13 +115,6 @@ module YAMLLocalisationParser =
             records <- recordsL |> Array.ofList
             recordsL <- []
 
-
-        // do
-        //     match Directory.Exists(localisationFolder) with
-        //     | true ->
-        //                 let files = Directory.EnumerateFiles localisationFolder |> List.ofSeq |> List.sort
-        //                 results <- addFiles files |> dict
-        //     | false -> ()
         new(localisationSettings: LocalisationSettings<'L>) =
             log (sprintf "Loading %s localisation in %s" localisationSettings.gameName localisationSettings.folder)
 
@@ -300,81 +249,3 @@ module IR =
               gameName = "Imperator"
               keyToLanguage = keyToLanguage
               gameToLang = IR }
-
-module Custom =
-    open YAMLLocalisationParser
-
-    let private keyToLanguage =
-        function
-        | "l_english" -> Some CustomLang.English
-        | "l_french" -> Some CustomLang.French
-        | "l_german" -> Some CustomLang.German
-        | "l_spanish" -> Some CustomLang.Spanish
-        | "l_simp_chinese" -> Some CustomLang.Chinese
-        | "l_russian" -> Some CustomLang.Russian
-        | "l_polish" -> Some CustomLang.Polish
-        | "l_braz_por" -> Some CustomLang.Braz_Por
-        | "l_default" -> Some CustomLang.Default
-        | _ -> None
-
-    let CustomLocalisationService (files: (string * string) list) =
-        YAMLLocalisationService(files, keyToLanguage, Custom)
-
-    let CustomLocalisationServiceFromFolder (folder: string) =
-        YAMLLocalisationService
-            { folder = folder
-              gameName = "Custom"
-              keyToLanguage = keyToLanguage
-              gameToLang = Custom }
-
-module CK3 =
-    open YAMLLocalisationParser
-
-    let private keyToLanguage =
-        function
-        | "l_english" -> Some CK3Lang.English
-        | "l_french" -> Some CK3Lang.French
-        | "l_german" -> Some CK3Lang.German
-        | "l_spanish" -> Some CK3Lang.Spanish
-        | "l_simp_chinese" -> Some CK3Lang.Chinese
-        | "l_russian" -> Some CK3Lang.Russian
-        | "l_korean" -> Some CK3Lang.Korean
-        | _ -> None
-
-    let CK3LocalisationService (files: (string * string) list) =
-        YAMLLocalisationService(files, keyToLanguage, CK3)
-
-    let CK3LocalisationServiceFromFolder (folder: string) =
-        YAMLLocalisationService
-            { folder = folder
-              gameName = "CK3"
-              keyToLanguage = keyToLanguage
-              gameToLang = CK3 }
-
-module VIC3 =
-    open YAMLLocalisationParser
-
-    let private keyToLanguage =
-        function
-        | "l_english" -> Some VIC3Lang.English
-        | "l_french" -> Some VIC3Lang.French
-        | "l_german" -> Some VIC3Lang.German
-        | "l_spanish" -> Some VIC3Lang.Spanish
-        | "l_simp_chinese" -> Some VIC3Lang.Chinese
-        | "l_russian" -> Some VIC3Lang.Russian
-        | "l_korean" -> Some VIC3Lang.Korean
-        | "l_japanese" -> Some VIC3Lang.Japanese
-        | "l_braz_por" -> Some VIC3Lang.Braz_Por
-        | "l_polish" -> Some VIC3Lang.Polish
-        | "l_turkish" -> Some VIC3Lang.Turkish
-        | _ -> None
-
-    let VIC3LocalisationService (files: (string * string) list) =
-        YAMLLocalisationService(files, keyToLanguage, VIC3)
-
-    let VIC3LocalisationServiceFromFolder (folder: string) =
-        YAMLLocalisationService
-            { folder = folder
-              gameName = "VIC3"
-              keyToLanguage = keyToLanguage
-              gameToLang = VIC3 }

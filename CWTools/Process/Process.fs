@@ -420,6 +420,9 @@ and Node(key: string, pos: range) =
             all <- (value |> Seq.toArray)
             reset ()
 
+    /// <summary>
+    /// Ö±½Ó·µ»ØFSharp List
+    /// <summary/>
     member __.AllArray = all
 
     member __.AllArray
@@ -662,8 +665,7 @@ module ProcessCore =
             | Comment(r, c) -> CommentC(r, c)
             | Value(pos, Value.Clause sl) -> lookupVC pos c sl [||]
             | Value(pos, v) -> LeafValueC(LeafValue(v, pos))
-        // member __.ProcessNode() = processNode id (processNodeInner { complete = false; parents = []; scope = ""; previous = ""; entityType = EntityType.Other})
-        // member __.ProcessNode() = (fun key pos sl -> (processNodeInner { complete = false; parents = []; scope = ""; previous = ""; entityType = EntityType.Other}) (KeyValue(PosKeyValue(pos, KeyValueItem(Key(key) , Clause(sl), Operator.Equals)))))
+        
         member __.ProcessNode() =
             (fun key pos sl ->
                 lookupN
@@ -825,3 +827,5 @@ module ProcessCore =
             match child with
             | NodeC node -> node.AllArray |> Array.iter recurse
             | _ -> ()
+
+    let simpleProcess = BaseProcess()
