@@ -2,7 +2,6 @@
     <PropertyGroup>
         <OutputType>Library</OutputType>
         <Tailcalls>true</Tailcalls>
-        <TargetFramework>net9.0</TargetFramework>
     </PropertyGroup>
     <ItemGroup>
         <Compile Include="AssemblyInfo.fs"/>
@@ -104,11 +103,7 @@
         <ProjectReference Include="..\CSharpHelpers\CSharpHelpers.csproj"/>
         <ProjectReference Include="..\Shared\Shared.fsproj"/>
     </ItemGroup>
-    <ItemGroup>
-      <PackageReference Update="FSharp.Core">
-        <Version>9.0.303</Version>
-      </PackageReference>
-    </ItemGroup>
+
     <ItemGroup>
         <PackageReference Include="FParsec"/>
         <PackageReference Include="FSharp.Data"/>
