@@ -76,7 +76,7 @@ type IGame =
     abstract Folders: unit -> (string * string) array
     abstract AllFiles: unit -> Resource list
     abstract AllLoadedLocalisation: unit -> string list
-    abstract UpdateFile: bool -> string -> string option -> CWError list
+    abstract UpdateFile: shallow: bool -> filepath: string -> fileText: string option -> CWError list
     abstract Complete: pos -> string -> string -> CompletionResponse list
     abstract GoToType: pos -> string -> string -> range option
     abstract FindAllRefs: pos -> string -> string -> range list option

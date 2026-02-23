@@ -5,6 +5,7 @@ open CWTools.Games.CK3
 open CWTools.Games.EU4
 open CWTools.Games.EU5
 open CWTools.Games.HOI4
+open CWTools.Utilities.Utils
 open CWToolsPerformanceCLI.PerfCommon
 open CWTools.Parser.DocsParser
 open CWTools.Games
@@ -82,18 +83,30 @@ let getDefaultGamePaths (config: PathConfig) =
 
 // Updated performance runner that returns structured data
 let perfRunnerWithResult (buildGame: unit -> IGame<_>) runValidation =
-    let timer = Stopwatch()
-    timer.Start()
+    let timer = Stopwatch.StartNew()
     let game = buildGame ()
 
     let errorCount =
         if runValidation then
             let errors = game.ValidationErrors() |> List.map (fun e -> e.range)
-            let testVals = game.AllEntities()
+            let testVals = game.AllEntities() |> Array.ofSeq
             game.RefreshCaches()
             game.ForceRecompute()
             game.RefreshCaches()
             game.ValidationErrors() |> ignore
+
+            match
+                game.AllEntities()
+                |> Seq.tryFind (fun struct (x, _) ->
+                    Path.GetExtension(x.filepath) = ".txt" && not (x.filepath.Contains("dlc")))
+            with
+            | Some x ->
+                x
+                |> structFst
+                |> (fun entity -> game.UpdateFile true entity.filepath None)
+                |> ignore
+            | None -> ()
+
             errors.Length
         else
             0
@@ -427,7 +440,8 @@ let perfHOI4
                         rootDirectories = Array.append settings.rootDirectories [| WD { path = mp; name = "mod" } |] }
                 | None -> settings
 
-            HOI4Game(finalSettings) :> IGame<_>)
+            let game = HOI4Game(finalSettings) :> IGame<_>
+            game)
         runTests
 
 // Simple test function for parsing individual files
