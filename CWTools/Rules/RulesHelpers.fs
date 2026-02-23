@@ -1,6 +1,7 @@
 module CWTools.Rules.RulesHelpers
 
 open System
+open System.Collections.Frozen
 open System.Collections.Generic
 open System.IO
 open CWTools.Games
@@ -148,7 +149,8 @@ let getTypesFromDefinitions
               id = n
               range = r
               explicitLocalisation = el
-              subtypes = sts }) |> Seq.toArray)
+              subtypes = sts })
+        |> Seq.toArray)
     |> Map.ofSeq
 
 let getEnumsFromComplexEnums (complexenums: ComplexEnumDef list) (es: Entity seq) : EnumDefinition list =
@@ -279,29 +281,28 @@ let getEnumsFromComplexEnums (complexenums: ComplexEnumDef list) (es: Entity seq
     |> List.map snd
 
 let expandPredefinedValues
-    (types: Map<string, PrefixOptimisedStringSet>)
+    (types: FrozenDictionary<string, PrefixOptimisedStringSet>)
     (enums: Map<string, _ * array<string * option<Position.range>>>)
     (values: string list)
     =
     let replaceType (value: string) =
-        let startIndex = value.IndexOf "<"
-        let endIndex = value.IndexOf ">" - 1
+        let startIndex = value.IndexOf '<'
+        let endIndex = value.IndexOf '>' - 1
         let referencedType = value.Substring(startIndex + 1, (endIndex - startIndex))
 
-        match types |> Map.tryFind referencedType with
-        | Some typeValues ->
-            // eprintfn "epv %A %A %A %A" value typeValues (value.Substring(0, startIndex)) (value.Substring(endIndex + 2))
+        match types.TryGetValue referencedType with
+        | true, typeValues ->
             let res =
                 typeValues.StringValues
                 |> Seq.map (fun tv -> value.Substring(0, startIndex) + tv + value.Substring(endIndex + 2))
                 |> List.ofSeq
-            // eprintfn "epv2 %A" res
+
             res
-        | None -> [ value ]
+        | false, _ -> [ value ]
 
     let replaceEnum (value: string) =
         let startIndex = value.IndexOf "enum["
-        let endIndex = value.IndexOf "]" - 1
+        let endIndex = value.IndexOf ']' - 1
         let referencedEnum = value.Substring(startIndex + 5, (endIndex - (startIndex + 4)))
 
         match enums |> Map.tryFind referencedEnum with
@@ -319,12 +320,12 @@ let expandPredefinedValues
 
     values
     |> List.collect (fun v ->
-        if v.Contains "<" && v.Contains ">" then
+        if v.Contains '<' && v.Contains '>' then
             replaceType v
         else
             [ v ])
     |> List.collect (fun v ->
-        if v.Contains "enum[" && v.Contains "]" then
+        if v.Contains "enum[" && v.Contains ']' then
             replaceEnum v
         else
             [ v ])
@@ -378,11 +379,17 @@ let generateModifiersFromType (typedef: TypeDefinition) (typeInstance: TypeDefIn
 
     (typedef.modifiers |> List.map inner) @ subtype
 
-let generateModifiersFromTypes (typedefs: TypeDefinition list) (typeDefMap: Collections.Map<string, TypeDefInfo array>) =
+let generateModifiersFromTypes
+    (typedefs: TypeDefinition list)
+    (typeDefMap: Collections.Map<string, TypeDefInfo array>)
+    =
     typedefs
     |> List.collect (fun td ->
         match typeDefMap |> Map.tryFind td.name with
-        | Some typeInstances -> typeInstances |> Seq.collect (fun ti -> generateModifiersFromType td ti) |> List.ofSeq
+        | Some typeInstances ->
+            typeInstances
+            |> Seq.collect (fun ti -> generateModifiersFromType td ti)
+            |> List.ofSeq
         | None -> [])
 
 let private modifierRuleFromNameAndTypeDef (nameWithSubtypes: string) (m: TypeModifier) =

@@ -151,7 +151,8 @@ type RulesManager<'T, 'L when 'T :> ComputedData and 'L :> Lookup>
     let mutable tempTypes = []
     let mutable tempValues = Map.empty
 
-    let mutable tempTypeMap = [ ("", PrefixOptimisedStringSet()) ] |> Map.ofList
+    let mutable tempTypeMap: FrozenDictionary<string, PrefixOptimisedStringSet> =
+        FrozenDictionary.Empty
 
     let mutable tempEnumMap: FrozenDictionary<string, string * PrefixOptimisedStringSet> =
         FrozenDictionary.Empty
@@ -215,7 +216,7 @@ type RulesManager<'T, 'L when 'T :> ComputedData and 'L :> Lookup>
         tempEnumMap <-
             (lookup.enumDefs
              |> Map.toSeq
-             |> PSeq.map (fun (k, (d, s)) -> KeyValuePair(k, (d, s |> Array.map fst |> createStringSet))))
+             |> PSeq.map (fun (k, (d, s)) -> KeyValuePair(k, (d, s |> Seq.map fst |> createStringSet))))
                 .ToFrozenDictionary()
 
         /// First pass type defs
@@ -225,6 +226,12 @@ type RulesManager<'T, 'L when 'T :> ComputedData and 'L :> Lookup>
         // log "Refresh rule caches time: %i" timer.ElapsedMilliseconds; timer.Restart()
         // log "Refresh rule caches time: %i" timer.ElapsedMilliseconds; timer.Restart()
 
+        let typeDefInfoToFrozenDictionary (typeDefInfo: Map<string, array<TypeDefInfo>>) =
+            (lookup.typeDefInfo
+             |> Map.toSeq
+             |> PSeq.map (fun (k, s) -> KeyValuePair(k, s |> Seq.map _.id |> createStringSet)))
+                .ToFrozenDictionary()
+    
         let refreshTypeInfo () =
             let processLoc, validateLoc = settings.locFunctions lookup
 
@@ -232,7 +239,7 @@ type RulesManager<'T, 'L when 'T :> ComputedData and 'L :> Lookup>
                 RuleValidationService(
                     rulesWrapper,
                     lookup.typeDefs,
-                    tempTypeMap.ToFrozenDictionary(),
+                    tempTypeMap,
                     tempEnumMap,
                     FrozenDictionary.Empty,
                     loc,
@@ -248,16 +255,13 @@ type RulesManager<'T, 'L when 'T :> ComputedData and 'L :> Lookup>
                 )
 
             let allEntities = resources.AllEntities() |> Seq.map structFst
+
             let typeDefInfo =
                 getTypesFromDefinitions (Some tempRuleValidationService) tempTypes allEntities
 
             lookup.typeDefInfo <- addEmbeddedTypeDefData typeDefInfo // |> Map.map (fun _ v -> v |> List.map (fun (_, t, r) -> (t, r)))
 
-            let newTypeMap =
-                lookup.typeDefInfo
-                |> Map.toSeq
-                |> PSeq.map (fun (k, s) -> k, s |> Seq.map _.id |> createStringSet)
-                |> Map.ofSeq
+            let newTypeMap = typeDefInfoToFrozenDictionary(lookup.typeDefInfo)
 
             newTypeMap
 
@@ -315,11 +319,7 @@ type RulesManager<'T, 'L when 'T :> ComputedData and 'L :> Lookup>
 
         settings.refreshConfigAfterFirstTypesHook lookup resources embeddedSettings
 
-        tempTypeMap <-
-            lookup.typeDefInfo
-            |> Map.toSeq
-            |> PSeq.map (fun (k, s) -> k, s |> Seq.map _.id |> createStringSet)
-            |> Map.ofSeq
+        tempTypeMap <- typeDefInfoToFrozenDictionary(lookup.typeDefInfo)
 
         let processLoc, validateLoc = settings.locFunctions lookup
 
@@ -327,7 +327,7 @@ type RulesManager<'T, 'L when 'T :> ComputedData and 'L :> Lookup>
             InfoService(
                 rulesWrapper,
                 lookup.typeDefs,
-                tempTypeMap.ToFrozenDictionary(),
+                tempTypeMap,
                 tempEnumMap,
                 FrozenDictionary.Empty,
                 loc,

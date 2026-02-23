@@ -5,11 +5,12 @@ open System
 open CWTools.Rules
 
 let computeData (infoService: unit -> InfoService option) (e: Entity) =
-    let withRulesData = infoService().IsSome
+    let infoServiceInstance = infoService()
+    let withRulesData = infoServiceInstance.IsSome
 
     let res =
-        (if infoService().IsSome then
-             Some(infoService().Value.BatchFolds(e))
+        (if infoServiceInstance.IsSome then
+             Some(infoServiceInstance.Value.BatchFolds(e))
          else
              None)
 
@@ -27,11 +28,12 @@ let computeData (infoService: unit -> InfoService option) (e: Entity) =
     ComputedData(referencedtypes, definedvariable, withRulesData, effectBlocks, triggersBlocks, savedEventTargets)
 
 let computeDataUpdate (infoService: unit -> InfoService option) (e: Entity) (data: ComputedData) =
-    let withRulesData = infoService().IsSome
+    let infoServiceInstance = infoService()
+    let withRulesData = infoServiceInstance.IsSome
 
     let res =
-        (if infoService().IsSome then
-             Some(infoService().Value.BatchFolds(e))
+        (if infoServiceInstance.IsSome then
+             Some(infoServiceInstance.Value.BatchFolds(e))
          else
              None)
 
