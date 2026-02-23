@@ -565,7 +565,7 @@ type InfoService
 
         let resultForType (child: Node option) (typedef: TypeDefinition) =
             let typeRules =
-                rootRules.TypeRules |> Array.filter (fun (name, _) -> name == typedef.name)
+                rootRules.TypeRules |> Array.filter (fun (struct (name, _)) -> name == typedef.name)
 
             match child with
             | Some c ->
@@ -1074,7 +1074,7 @@ type InfoService
 
         let infoServiceBase (n: Node) acc (t: TypeDefinition) =
             let typerules =
-                rootRules.TypeRules |> Array.filter (fun (name, _) -> name == t.name)
+                rootRules.TypeRules |> Array.filter (fun (struct (name, _)) -> name == t.name)
 
             match typerules, t.type_per_file with
             | [| (_, (NodeRule(_, rs), o)) |], false ->
