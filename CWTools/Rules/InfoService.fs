@@ -1102,12 +1102,12 @@ type InfoService
     let getTypesInEntity () = // (entity : Entity) =
         let changeValueScopeInner (keyId: StringTokens) scope =
             let metadata = stringManager.GetMetadataForID keyId.lower
-            let key = stringManager.GetStringForIDs keyId
+            let rawKey = stringManager.GetStringForIDs keyId
 
             let key =
                 match metadata.containsPipe with
-                | true -> key.Split('|', 2)[0]
-                | _ -> key
+                | true -> rawKey.AsSpan().SplitFirst('|')
+                | _ -> rawKey.AsSpan()
 
             match changeScope.Invoke(false, true, links, valueTriggers, wildCardLinks, varSet, key, scope) with
             | ValueFound rh -> rh
@@ -1115,9 +1115,9 @@ type InfoService
             | NewScope(_, _, rh) -> rh
             | _ ->
                 match enums.TryFind "static_values" with
-                | Some(_, trie) ->
+                | Some(_, trie: LowerStringSparseTrie) ->
                     if trie.Contains key then
-                        Some(EnumRef("static_values", key))
+                        Some(EnumRef("static_values", if metadata.containsPipe then key.ToString() else rawKey))
                     else
                         None
                 | None -> None
