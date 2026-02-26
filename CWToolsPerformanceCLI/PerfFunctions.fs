@@ -1,10 +1,12 @@
 module CWToolsPerformanceCLI.PerfFunctions
 
+open System.Linq
 open CWTools
 open CWTools.Games.CK3
 open CWTools.Games.EU4
 open CWTools.Games.EU5
 open CWTools.Games.HOI4
+open CWTools.Utilities.Position
 open CWTools.Utilities.Utils
 open CWToolsPerformanceCLI.PerfCommon
 open CWTools.Parser.DocsParser
@@ -97,13 +99,25 @@ let perfRunnerWithResult (buildGame: unit -> IGame<_>) runValidation =
 
             match
                 game.AllEntities()
-                |> Seq.tryFind (fun struct (x, _) ->
-                    Path.GetExtension(x.filepath) = ".txt" && not (x.filepath.Contains("dlc")))
+                |> Seq.tryFind (fun struct (entity, _) ->
+                    Path.GetExtension(entity.filepath) = ".txt" && not (entity.filepath.Contains("dlc")))
             with
-            | Some x ->
-                x
+            | Some data ->
+                data
                 |> structFst
-                |> (fun entity -> game.UpdateFile true entity.filepath None)
+                |> (fun entity ->
+                    if entity.rawEntity.AllArray.Length - entity.rawEntity.Comments.Count() > 0 then
+                        game.InfoAtPos
+                            (entity.rawEntity.AllArray
+                             // comment nodes don't have little info, so find the first non-comment child for the position
+                             |> Array.find (fun x -> not x.IsCommentC)
+                             |> getChildPosition
+                             |> _.Start)
+                            entity.filepath
+                            (File.ReadAllText entity.filepath)
+                        |> ignore
+
+                    game.UpdateFile true entity.filepath None)
                 |> ignore
             | None -> ()
 

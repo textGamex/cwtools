@@ -217,13 +217,13 @@ module LanguageFeatures =
         (lookup: Lookup)
         (pos: pos)
         (filepath: string)
-        (filetext: string)
+        (fileText: string)
         : SymbolInformation option =
-        let resource = makeEntityResourceInput fileManager filepath filetext
+        let resource = makeEntityResourceInput fileManager filepath fileText
 
         match resourceManager.ManualProcessResource resource, infoService with
         | Some e, Some info ->
-            log (sprintf "symbolInfoAtPos %s %s" (fileManager.ConvertPathToLogicalPath filepath) filepath)
+            log $"symbolInfoAtPos %s{fileManager.ConvertPathToLogicalPath filepath} %s{filepath}"
 
             let ruleOptions, typeInfo, nodeAtPos =
                 info.GetInfo(pos, e)
@@ -432,13 +432,6 @@ module LanguageFeatures =
                 None
         | _ -> None
 
-    // type CachedRuleMetadata = {
-    //     typeDefs : Map<string,list<TypeDefInfo>>
-    //     enumDefs : Map<string,string * list<string>>
-    //     varDefs : Map<string,list<string * range>>
-    //     loc : (Lang * Set<string>) list
-    //     files : Set<string>
-    // }
     let getEmbeddedMetadata (lookup: Lookup) (localisation: LocalisationManager<_>) (resources: ResourceManager<_>) =
         { typeDefs = lookup.typeDefInfo
           enumDefs = lookup.enumDefs |> Map.map (fun _ (s, v) -> s, v |> Array.map fst)
@@ -446,7 +439,6 @@ module LanguageFeatures =
           loc = localisation.LocalisationKeys()
           files = resources.Api.GetFileNames() |> Set.ofSeq
           scriptedLoc = lookup.scriptedLoc }
-
 
     let graphEventDataForFiles
         (referenceManager: References<_>)

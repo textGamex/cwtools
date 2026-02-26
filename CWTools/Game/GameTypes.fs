@@ -86,7 +86,7 @@ type IGame =
     abstract ForceRecompute: unit -> unit
     abstract Types: unit -> Map<string, TypeDefInfo array>
     abstract TypeDefs: unit -> CWTools.Rules.TypeDefinition list
-    abstract InfoAtPos: pos -> string -> string -> SymbolInformation option
+    abstract InfoAtPos: pos -> filePath: string -> fileText: string -> SymbolInformation option
     abstract GetPossibleCodeEdits: string -> string -> range list
     abstract GetCodeEdits: string -> string -> (range seq * pos * string) list option
     abstract GetEventGraphData: GraphDataRequest
