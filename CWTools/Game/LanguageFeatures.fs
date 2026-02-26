@@ -7,6 +7,7 @@ open CWTools.Utilities.Utils
 open CWTools.Process
 open CWTools.Rules
 open CWTools.Common
+open System.Collections.Generic
 
 module LanguageFeatures =
 
@@ -165,7 +166,9 @@ module LanguageFeatures =
                     let x = l.Force().Referencedtypes in
 
                     if x.IsSome then
-                        (x.Value.TryFind t)
+                        match x.Value.TryGetValue t with
+                        | true, v -> Some v
+                        | false, _ -> None
                     else
                         let contains, value = (info.GetReferencedTypes e).TryGetValue t in
                         if contains then Some(value |> List.ofSeq) else None)
@@ -480,12 +483,13 @@ module LanguageFeatures =
                 |> Array.map (fun tdi -> k, tdi.id, tdi.range, tdi.explicitLocalisation, tdi.subtypes)
                 |> List.ofSeq)
 
-        let getSourceTypes (x: Map<string, ReferenceDetails list>) =
-            Map.toList x
-            |> List.filter (fun (k, _) -> sourceTypes |> List.contains k)
-            |> List.collect (fun (k, vs) ->
-                vs
-                |> List.map (fun rd -> k, rd.name, rd.position, rd.isOutgoing, rd.referenceLabel, []))
+        let getSourceTypes (x: IReadOnlyDictionary<string, ReferenceDetails list>) =
+            x
+            |> Seq.filter (fun kv -> sourceTypes |> List.contains kv.Key)
+            |> Seq.collect (fun kv ->
+                kv.Value
+                |> List.map (fun rd -> kv.Key, rd.name, rd.position, rd.isOutgoing, rd.referenceLabel, []))
+            |> List.ofSeq
 
         let getNonExplicitLoc (id: string) (typeName: string) =
             lookup.typeDefs
