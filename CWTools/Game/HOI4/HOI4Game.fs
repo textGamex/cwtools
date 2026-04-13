@@ -213,7 +213,10 @@ module HOI4GameFunctions =
             ))
 
     let loadConfigRulesHook (rules: RootRule array) (lookup: Lookup) embedded =
-        lookup.allCoreLinks <- lookup.triggers @ lookup.effects @ updateEventTargetLinks embedded
+        lookup.allCoreLinks <-
+            [ yield! lookup.triggers
+              yield! lookup.effects
+              yield! updateEventTargetLinks embedded ]
         Array.append rules (addModifiersWithScopes lookup)
 
     let refreshConfigBeforeFirstTypesHook (lookup: HOI4Lookup) _ _ =
@@ -255,10 +258,10 @@ module HOI4GameFunctions =
         (embeddedSettings: EmbeddedSettings)
         =
         lookup.allCoreLinks <-
-            lookup.triggers
-            @ lookup.effects
-            @ updateEventTargetLinks embeddedSettings
-            @ addDataEventTargetLinks lookup embeddedSettings false
+            [ yield! lookup.triggers
+              yield! lookup.effects
+              yield! updateEventTargetLinks embeddedSettings
+              yield! addDataEventTargetLinks lookup embeddedSettings false ]
 
     let afterInit (game: GameObject) =
         updateModifiers (game)
