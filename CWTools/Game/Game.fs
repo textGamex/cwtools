@@ -105,8 +105,8 @@ type GameObject<'T, 'L when 'T :> ComputedData and 'L :> Lookup>
 
     let resourceManager =
         ResourceManager<'T>(
-            computeFunction (fun () -> this.InfoService),
-            computeUpdateFunction (fun () -> this.InfoService),
+            computeFunction (fun () -> infoService),
+            computeUpdateFunction (fun () -> infoService),
             encoding,
             fallbackencoding,
             settings.enableInlineScripts
