@@ -21,6 +21,7 @@ open CWTools.Games.Stellaris
 open CWTools.Common.STLConstants
 open CWToolsCLI
 open System
+open JetBrains.Profiler.Api
 
 // Performance result record
 type PerfResult =
@@ -85,6 +86,7 @@ let getDefaultGamePaths (config: PathConfig) =
 
 // Updated performance runner that returns structured data
 let perfRunnerWithResult (buildGame: unit -> IGame<_>) runValidation =
+    MeasureProfiler.StartCollectingData()
     let timer = Stopwatch.StartNew()
     let game = buildGame ()
 
@@ -126,6 +128,7 @@ let perfRunnerWithResult (buildGame: unit -> IGame<_>) runValidation =
             0
 
     timer.Stop()
+    MeasureProfiler.SaveData()
 
     { ElapsedMilliseconds = timer.ElapsedMilliseconds
       ErrorCount = errorCount }

@@ -21,5 +21,6 @@
         <PackageReference Include="ByteSize"/>
         <PackageReference Include="Argu"/>
         <PackageReference Include="Expecto"/>
+        <PackageReference Include="JetBrains.Profiler.Api" />
     </ItemGroup>
 </Project>
