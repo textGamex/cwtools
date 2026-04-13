@@ -354,10 +354,10 @@ type RulesManager<'T, 'L when 'T :> ComputedData and 'L :> Lookup>
 
         let predefValues =
             tempValues
-            |> Map.map (fun k vs -> (expandPredefinedValues tempTypeMap lookup.enumDefs vs))
-            |> Map.toList
-            |> List.map (fun (s, sl) -> s, (sl |> Seq.map (fun s2 -> s2, range.Zero) |> Array.ofSeq))
-            |> Map.ofList
+            |> Map.map (fun _ vs ->
+                expandPredefinedValues tempTypeMap lookup.enumDefs vs
+                |> Seq.map (fun s2 -> s2, range.Zero)
+                |> Array.ofSeq)
 
         let results =
             resources.AllEntities()
