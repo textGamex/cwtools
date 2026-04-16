@@ -191,6 +191,12 @@ type RulesManager<'T, 'L when 'T :> ComputedData and 'L :> Lookup>
         rulesDataGenerated <- false
     // log (sprintf "Update config rules def: %i" timer.ElapsedMilliseconds); timer.Restart()
 
+    let typeDefInfoToFrozenDictionary (typeDefInfo: Map<string, array<TypeDefInfo>>) =
+        (typeDefInfo
+         |> Map.toSeq
+         |> PSeq.map (fun (k, s) -> KeyValuePair(k, s |> Seq.map _.id |> createStringSet)))
+            .ToFrozenDictionary()
+
     let refreshConfig () =
         let timer = System.Diagnostics.Stopwatch()
         let endToEndTimer = System.Diagnostics.Stopwatch()
@@ -200,8 +206,7 @@ type RulesManager<'T, 'L when 'T :> ComputedData and 'L :> Lookup>
 
         let entities = resources.AllEntities() |> Seq.map structFst |> Seq.toArray
         /// Enums
-        let complexEnumDefs =
-            getEnumsFromComplexEnums complexEnums entities
+        let complexEnumDefs = getEnumsFromComplexEnums complexEnums entities
 
         let allEnums = Seq.append simpleEnums complexEnumDefs
 
@@ -222,16 +227,7 @@ type RulesManager<'T, 'L when 'T :> ComputedData and 'L :> Lookup>
 
         /// First pass type defs
         let loc = addEmbeddedLoc languages localisation.localisationKeys
-        // log "Refresh rule caches time: %i" timer.ElapsedMilliseconds; timer.Restart()
         let files = addEmbeddedFiles(resources.GetFileNames().ToHashSet()).ToFrozenSet()
-        // log "Refresh rule caches time: %i" timer.ElapsedMilliseconds; timer.Restart()
-        // log "Refresh rule caches time: %i" timer.ElapsedMilliseconds; timer.Restart()
-
-        let typeDefInfoToFrozenDictionary (typeDefInfo: Map<string, array<TypeDefInfo>>) =
-            (lookup.typeDefInfo
-             |> Map.toSeq
-             |> PSeq.map (fun (k, s) -> KeyValuePair(k, s |> Seq.map _.id |> createStringSet)))
-                .ToFrozenDictionary()
 
         let refreshTypeInfo () =
             let processLoc, validateLoc = settings.locFunctions lookup
@@ -342,9 +338,6 @@ type RulesManager<'T, 'L when 'T :> ComputedData and 'L :> Lookup>
                 validateLoc
             )
 
-
-        //let infoService = tempInfoService
-        // game.InfoService <- Some tempInfoService
         if not rulesDataGenerated then
             resources.ForceRulesDataGenerate()
             rulesDataGenerated <- true
@@ -361,7 +354,7 @@ type RulesManager<'T, 'L when 'T :> ComputedData and 'L :> Lookup>
         let results =
             resources.AllEntities()
             |> PSeq.map (fun struct (e, l) ->
-                (l.Force().Definedvariables
+                (l.Value.Definedvariables
                  |> (Option.defaultWith (fun () -> tempInfoService.GetDefinedVariables e))))
             |> Seq.fold
                 (fun m map ->
@@ -380,7 +373,7 @@ type RulesManager<'T, 'L when 'T :> ComputedData and 'L :> Lookup>
         let results =
             resources.AllEntities()
             |> PSeq.map (fun struct (e, l) ->
-                (l.Force().SavedEventTargets
+                (l.Value.SavedEventTargets
                  |> (Option.defaultWith (fun () -> tempInfoService.GetSavedEventTargets e))))
             |> Seq.fold
                 (fun (acc: ResizeArray<_>) e ->
@@ -398,7 +391,6 @@ type RulesManager<'T, 'L when 'T :> ComputedData and 'L :> Lookup>
              |> PSeq.map (fun (k, s) -> KeyValuePair(k, s |> Seq.map fst |> createStringSet)))
                 .ToFrozenDictionary()
 
-        // log "Refresh rule caches time: %i" timer.ElapsedMilliseconds; timer.Restart()
         // log "Refresh rule caches time: %i" timer.ElapsedMilliseconds; timer.Restart()
         let dataTypes =
             embeddedSettings.localisationCommands

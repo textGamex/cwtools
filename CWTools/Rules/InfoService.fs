@@ -1325,7 +1325,7 @@ type InfoService
             else
                 first.ToString()
 
-        let fLeaf (res: Collections.Map<string, ResizeArray<string * range>>) (leaf: Leaf) ((field, _): NewRule) =
+        let fLeaf (res: Map<string, ResizeArray<string * range>>) (leaf: Leaf) ((field, _): NewRule) =
             match field with
             | LeafRule(_, VariableSetField v) ->
                 res
@@ -1351,7 +1351,7 @@ type InfoService
                     ))
             | _ -> res
 
-        let fLeafValue (res: Collections.Map<string, ResizeArray<string * range>>) (leafvalue: LeafValue) (field, _) =
+        let fLeafValue (res: Map<string, ResizeArray<string * range>>) (leafvalue: LeafValue) (field, _) =
             match field with
             | LeafValueRule(VariableSetField v) ->
                 res
@@ -1366,7 +1366,7 @@ type InfoService
                     ))
             | _ -> res
 
-        let fNode (res: Collections.Map<string, ResizeArray<string * range>>) (node: Node) ((field, option): NewRule) =
+        let fNode (res: Map<string, ResizeArray<string * range>>) (node: Node) ((field, option): NewRule) =
             match field with
             | NodeRule(VariableSetField v, _) ->
                 res
