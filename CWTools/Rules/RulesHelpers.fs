@@ -248,9 +248,7 @@ let rec private inner scalarKeyId enumNameKeyId nameKeyId (enumtree: Node) (node
 let private innerStart scalarKeyId enumNameKeyId nameKeyId (enumtree: Node) (node: Node) =
     inner scalarKeyId enumNameKeyId nameKeyId enumtree node
 
-let getEnumsFromComplexEnums (complexenums: ComplexEnumDef list) (es: Entity seq) : EnumDefinition array =
-    let entities = es |> Seq.toArray
-
+let getEnumsFromComplexEnums (complexenums: ComplexEnumDef list) (entities: Entity seq) : EnumDefinition array =
     let scalarKeyId =
         (StringResource.stringManager.InternIdentifierToken "scalar").lower
 

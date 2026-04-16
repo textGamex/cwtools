@@ -198,9 +198,10 @@ type RulesManager<'T, 'L when 'T :> ComputedData and 'L :> Lookup>
         endToEndTimer.Start()
         let rulesWrapper = RulesWrapper(lookup.configRules)
 
+        let entities = resources.AllEntities() |> Seq.map structFst |> Seq.toArray
         /// Enums
         let complexEnumDefs =
-            getEnumsFromComplexEnums complexEnums (resources.AllEntities() |> Seq.map structFst)
+            getEnumsFromComplexEnums complexEnums entities
 
         let allEnums = Seq.append simpleEnums complexEnumDefs
 
@@ -254,10 +255,8 @@ type RulesManager<'T, 'L when 'T :> ComputedData and 'L :> Lookup>
                     validateLoc
                 )
 
-            let allEntities = resources.AllEntities() |> Seq.map structFst
-
             let typeDefInfo =
-                getTypesFromDefinitions (Some tempRuleValidationService) tempTypes allEntities
+                getTypesFromDefinitions (Some tempRuleValidationService) tempTypes entities
 
             lookup.typeDefInfo <- addEmbeddedTypeDefData typeDefInfo // |> Map.map (fun _ v -> v |> List.map (fun (_, t, r) -> (t, r)))
 
