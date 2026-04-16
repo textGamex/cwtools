@@ -105,6 +105,7 @@
     </ItemGroup>
 
     <ItemGroup>
+        <PackageReference Include="Faster.Collections.Pooled" />
         <PackageReference Include="FParsec"/>
         <PackageReference Include="FSharp.Data"/>
         <PackageReference Include="FSharp.Collections.ParallelSeq"/>

@@ -202,11 +202,11 @@ type RulesManager<'T, 'L when 'T :> ComputedData and 'L :> Lookup>
         let complexEnumDefs =
             getEnumsFromComplexEnums complexEnums (resources.AllEntities() |> Seq.map structFst)
 
-        let allEnums = simpleEnums @ complexEnumDefs
+        let allEnums = Seq.append simpleEnums complexEnumDefs
 
         let newEnumDefs =
             allEnums
-            |> Seq.map (fun e -> (e.key, (e.description, e.valuesWithRange)))
+            |> Seq.map (fun e -> e.key, (e.description, e.valuesWithRange))
             |> Map.ofSeq
 
         lookup.enumDefs <- addEmbeddedEnumDefData newEnumDefs
@@ -231,7 +231,7 @@ type RulesManager<'T, 'L when 'T :> ComputedData and 'L :> Lookup>
              |> Map.toSeq
              |> PSeq.map (fun (k, s) -> KeyValuePair(k, s |> Seq.map _.id |> createStringSet)))
                 .ToFrozenDictionary()
-    
+
         let refreshTypeInfo () =
             let processLoc, validateLoc = settings.locFunctions lookup
 
@@ -261,7 +261,7 @@ type RulesManager<'T, 'L when 'T :> ComputedData and 'L :> Lookup>
 
             lookup.typeDefInfo <- addEmbeddedTypeDefData typeDefInfo // |> Map.map (fun _ v -> v |> List.map (fun (_, t, r) -> (t, r)))
 
-            let newTypeMap = typeDefInfoToFrozenDictionary(lookup.typeDefInfo)
+            let newTypeMap = typeDefInfoToFrozenDictionary (lookup.typeDefInfo)
 
             newTypeMap
 
@@ -319,7 +319,7 @@ type RulesManager<'T, 'L when 'T :> ComputedData and 'L :> Lookup>
 
         settings.refreshConfigAfterFirstTypesHook lookup resources embeddedSettings
 
-        tempTypeMap <- typeDefInfoToFrozenDictionary(lookup.typeDefInfo)
+        tempTypeMap <- typeDefInfoToFrozenDictionary (lookup.typeDefInfo)
 
         let processLoc, validateLoc = settings.locFunctions lookup
 
