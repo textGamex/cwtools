@@ -88,8 +88,10 @@ module HOI4GameFunctions =
         | None -> ()
         | Some pf ->
             let resizeArray = ResizeArray<string>(pf.filetext.AsSpan().Count('\n'))
+
             for line: ReadOnlySpan<char> in pf.filetext.AsSpan().EnumerateLines() do
-                   resizeArray.Add(line.SplitFirst(';').ToString())
+                resizeArray.Add(line.SplitFirst(';').ToString())
+
             game.Lookup.HOI4provinces <- resizeArray.ToArray()
 
     let updateScriptedLoc (game: GameObject) =
@@ -217,6 +219,7 @@ module HOI4GameFunctions =
             [ yield! lookup.triggers
               yield! lookup.effects
               yield! updateEventTargetLinks embedded ]
+
         Array.append rules (addModifiersWithScopes lookup)
 
     let refreshConfigBeforeFirstTypesHook (lookup: HOI4Lookup) _ _ =
